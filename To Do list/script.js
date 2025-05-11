@@ -1,6 +1,3 @@
-// Select DOM elements
-// localStorage.clear();
-
 let taskInput = document.getElementById("task-input");
 const addTaskBtn = document.getElementById("add-task");
 const taskList = document.getElementById("task-list");
@@ -35,18 +32,21 @@ function renderCard() {
     li.className =
       "flex justify-between items-center bg-gray-700 p-3 rounded-xl";
 
-    li.setAttribute("id", idx);
-
     let span = document.createElement("span");
     span.className =
-      "flex-1 cursor-pointer line-through text-gray-400 hover:text-indigo-300";
-
+      "flex-grow cursor-pointer text-gray-400 hover:text-indigo-300";
+    if (element.completed) {
+      span.classList.add("line-through");
+      span.classList.add("text-gray-500");
+    }
     span.innerText = element.text;
 
     let btn = document.createElement("button");
     btn.classList = "ml-4 text-red-400 hover:text-red-500";
     btn.innerText = "🗑️";
+    btn.setAttribute("id", idx);
 
+    span.addEventListener("click", () => taskDone(idx));
     li.appendChild(span);
     li.appendChild(btn);
 
@@ -60,7 +60,21 @@ function saveTask() {
 
 function deletedTask() {
   taskList.addEventListener("click", (dets) => {
-    console.log(dets);
+    const index = tasks[parseInt(dets.target.id)];
+    if (dets.target.tagName === "BUTTON") {
+      const dltTask = index.id;
+      tasks = tasks.filter((task) => task.id != dltTask);
+
+      saveTask();
+      renderCard();
+    }
   });
 }
+
+function taskDone(idx) {
+  tasks[idx].completed = !tasks[idx].completed;
+  saveTask();
+  renderCard();
+}
+
 deletedTask();
