@@ -1,16 +1,19 @@
 let taskInput = document.getElementById("task-input");
 const addTaskBtn = document.getElementById("add-task");
 const taskList = document.getElementById("task-list");
+const all = document.getElementsByClassName("filter-btn")[0];
+const active = document.getElementsByClassName("filter-btn")[1];
+const completed = document.getElementsByClassName("filter-btn")[2];
+const taskCount = document.getElementById("task-count");
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-renderCard();
+renderCard(tasks);
 
 addTaskBtn.addEventListener("click", addTask);
 
 function addTask() {
   let inpTxt = taskInput.value.trim();
-
   if (inpTxt === "") return;
 
   const task = {
@@ -21,13 +24,16 @@ function addTask() {
 
   tasks.push(task);
   saveTask();
-  renderCard();
+  renderCard(tasks);
+  taskInput.value = ""; // Clear input after adding
 }
 
-function renderCard() {
+function renderCard(taskArray) {
   taskList.innerHTML = "";
-
-  tasks.forEach((element, idx) => {
+  let count = 0;
+  taskArray.forEach((element) => {
+    count++;
+    taskCount.innerText = count+" task";
     let li = document.createElement("li");
     li.className =
       "flex justify-between items-center bg-gray-700 p-3 rounded-xl";
@@ -44,37 +50,51 @@ function renderCard() {
     let btn = document.createElement("button");
     btn.classList = "ml-4 text-red-400 hover:text-red-500";
     btn.innerText = "🗑️";
-    btn.setAttribute("id", idx);
+    btn.setAttribute("data-id", element.id);
 
-    span.addEventListener("click", () => taskDone(idx));
+    span.addEventListener("click", () => taskDone(element.id));
     li.appendChild(span);
     li.appendChild(btn);
 
     taskList.appendChild(li);
   });
+
 }
 
 function saveTask() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-function deletedTask() {
-  taskList.addEventListener("click", (dets) => {
-    const index = tasks[parseInt(dets.target.id)];
-    if (dets.target.tagName === "BUTTON") {
-      const dltTask = index.id;
-      tasks = tasks.filter((task) => task.id != dltTask);
+// Handle delete
+taskList.addEventListener("click", (dets) => {
+  if (dets.target.tagName === "BUTTON") {
+    const id = parseInt(dets.target.getAttribute("data-id"));
+    tasks = tasks.filter((task) => task.id !== id);
+    saveTask();
+    renderCard(tasks);
+  }
+});
 
-      saveTask();
-      renderCard();
-    }
-  });
+function taskDone(id) {
+  const index = tasks.findIndex((task) => task.id === id);
+  if (index !== -1) {
+    tasks[index].completed = !tasks[index].completed;
+    saveTask();
+    renderCard(tasks);
+  }
 }
 
-function taskDone(idx) {
-  tasks[idx].completed = !tasks[idx].completed;
-  saveTask();
-  renderCard();
-}
+// Filter buttons
+completed.addEventListener("click", () => {
+  let completedTasks = tasks.filter((task) => task.completed);
+  renderCard(completedTasks);
+});
 
-deletedTask();
+active.addEventListener("click", () => {
+  let activeTasks = tasks.filter((task) => !task.completed);
+  renderCard(activeTasks);
+});
+
+all.addEventListener("click", () => {
+  renderCard(tasks);
+});
