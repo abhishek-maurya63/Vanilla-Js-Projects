@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-black text-white">
+    <div class="flex flex-col md:flex-row w-full h-screen overflow-hidden">
+      <!-- Sidebar -->
+      <aside
+        class="w-full md:w-[20%] bg-black flex flex-col justify-between border-r border-[#2a2a2a]"
+      >
+        <!-- Header -->
+        <header class="px-6 pt-6">
+          <div class="flex items-center justify-between mb-6">
+            <h1 class="voax text-2xl font-bold tracking-wide">VOAX</h1>
+
+            <div
+              onclick="openCreateTask('text-2xl','font-normal')"
+              class="flex items-center gap-3"
+            >
+              <!-- Pencil -->
+              <button class="w-8 h-8 p-1 rounded hover:bg-[#1a1a1a]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 32 32"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class="w-full h-full text-white"
+                >
+                  <polygon
+                    points="22,16.8 22,26 6,26 6,10 15.2,10 17.2,8 4,8 4,28 24,28 24,14.8"
+                  />
+                  <path
+                    d="M16.5,18.3L13,19l0.7-3.5l9.9-9.9c0.8-0.8,2-0.8,2.8,0c0.8,0.8,0.8,2,0,2.8L16.5,18.3z"
+                  />
+                </svg>
+              </button>
+
+              <!-- Logout -->
+              <button class="w-6 h-6 p-1 rounded hover:bg-[#1a1a1a]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="white"
+                  viewBox="0 0 1920 1920"
+                  class="w-full h-full"
+                >
+                  <path
+                    d="M1807.124.056V1920h-112.938V.056h112.938ZM1468.254 0v1919.944H282.407c-93.4 0-169.407-75.895-169.407-169.407V169.407C113 76.007 189.007 0 282.407 0h1185.847ZM830.607 661.138 588.242 903.503h654.137v112.938H588.242l242.365 242.477-79.847 79.847-378.793-378.793 378.793-378.68 79.847 79.846Z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sidebar Search -->
+          <div class="relative mb-6">
+            <input
+              type="text"
+              placeholder="Search..."
+              class="w-full pl-10 pr-4 py-2 rounded-md bg-[#1f1f1f] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <svg
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 21l-4.35-4.35M4.5 10.5a7.5 7.5 0 1115 0 7.5 7.5 0 01-15 0z"
+              />
+            </svg>
+          </div>
+
+          <!-- Sidebar Links -->
+          <div class="space-y-2 mb-6">
+            <div
+              onclick="homeWindow()"
+              class="bg-[#1a1a1a] flex items-center gap-3 hover:bg-[#222222] p-3 rounded-md text-sm font-medium cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 9.75L12 3l9 6.75M4.5 10.5V21h15v-10.5"
+                />
+              </svg>
+              Home
+            </div>
+          </div>
+        </header>
+
+        <!-- Sidebar Tasks -->
+        <section class="h-full">
+          <div class="px-6 overflow-y-auto pb-4">
+            <h2 class="text-xs text-gray-500 uppercase tracking-wide mb-2">
+              My Tasks
+            </h2>
+            <div class="space-y-2">
+              <div
+                class="bg-[#1a1a1a] hover:bg-[#222222] p-3 rounded-md text-sm cursor-pointer truncate"
+              >
+                📌 Finish UI for Todo App
+              </div>
+              <div
+                class="bg-[#1a1a1a] hover:bg-[#222222] p-3 rounded-md text-sm cursor-pointer truncate"
+              >
+                ➕ Add Nested Task Support
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Footer -->
+        <footer class="text-xs text-gray-600 text-center p-4">
+          VOAX © 2025
+        </footer>
+      </aside>
+
+      <!-- Main Content -->
+      <main
+        class="home w-full md:w-[80%] h-full p-6 overflow-y-auto flex justify-center items-center"
+      ></main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  width: 100%;
+  height: 4.5rem;
+  // background-color: black;
+  .nav {
+    width: 100%;
+    height: 100%;
+    // padding: 1rem;
+    // margin-left: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .left {
+      width: 70%;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      img {
+        margin-left: 1rem;
+        width: 3rem;
+        height: 3rem;
+      }
+      h1 {
+        width: 20rem;
+      }
+    }
+    .right {
+      width: 20%;
+      height: 100%;
+      align-content: center;
+      img {
+        width: 3rem;
+      }
+    }
+  }
+}
+
+main {
+  width: 100%;
+  .view-1 {
+    width: 100%;
+    height: 30rem;
+    background-image: url(webmaven.png);
+    object-fit: fill;
+  }
+}
