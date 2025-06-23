@@ -1,7 +1,18 @@
+const taskData = [];
+const newTask = {
+  taskId: "task-" + Date.now(),
+  title: "",
+  timeCreated: Date.now(),
+  timeLastUpdated: Date.now(),
+  category: "",
+  runningStatus: "in-progress",
+  blockData: [],
+};
+
 const home = document.querySelector(".home");
 window.addEventListener("DOMContentLoaded", (e) => {
-  e.preventDefault;
-  homeWindow();
+  // homeWindow();
+  openCreateTask();
 });
 const homeWindow = () => {
   const homeContent = `<div class="w-full h-full px-2 md:px-8 space-y-10">
@@ -116,52 +127,199 @@ const homeWindow = () => {
 };
 
 const cursonFocus = (elem) => {
-  // Ensure the element is editable and focused
-  elem.setAttribute("contenteditable", "true");
+  if (
+    !elem.getAttribute("contenteditable") ||
+    elem.getAttribute("contenteditable") === null
+  ) {
+    elem.setAttribute("contenteditable", "true");
+  }
+  elem.classList.add("focus:outline-none");
   elem.focus();
 
   const range = document.createRange();
   range.selectNodeContents(elem);
-  range.collapse(false); // Move cursor to end
+  range.collapse(false); // place caret at end
 
   const sel = window.getSelection();
   sel.removeAllRanges();
   sel.addRange(range);
 };
 
-const openCreateTask = (textSize, fontWeight) => {
-  console.log("clicked");
+const openTextOptions = (id) => {
+  const elem = document.querySelector("#" + id);
+  if (!elem) return;
+
+  // Remove any previous options menu
+  const existing = elem.querySelector("#textSizeOptions");
+  if (existing) existing.remove();
+
+  // Create container
+  const menu = document.createElement("div");
+  menu.setAttribute("id", "textSizeOptions");
+  menu.setAttribute("contenteditable", "false");
+  menu.className =
+    "absolute z-50 bg-[#1f1f1f] text-white rounded-md shadow-lg p-2 space-y-1 border border-gray-700 w-48";
+
+  // Header
+  const heading = document.createElement("h5");
+  heading.className = "text-sm";
+  heading.textContent = "Block Options";
+  menu.appendChild(heading);
+
+  // Divider
+  const divider = document.createElement("div");
+  divider.className = "h-[1px] w-full bg-gray-500 mt-[5px]";
+  menu.appendChild(divider);
+
+  // Option definitions
+  const options = [
+    { label: "Heading 1", class: "text-4xl font-bold" },
+    { label: "Heading 2", class: "text-3xl font-semibold" },
+    { label: "Heading", class: "text-2xl font-medium" },
+    { label: "Paragraph", class: "text-base font-normal" },
+  ];
+
+  // Create each option
+  options.forEach((opt) => {
+    const item = document.createElement("div");
+    item.className = `px-3 py-2 hover:bg-[#2a2a2a] rounded cursor-pointer ${opt.class}`;
+    item.setAttribute("data-class", opt.class);
+    item.textContent = opt.label;
+
+    item.addEventListener("click", () => {
+      const [fontSize, fontWeight] = opt.class.split(" ");
+      editCreator(fontSize, fontWeight);
+      menu.remove(); // remove the menu after applying class
+    });
+
+    menu.appendChild(item);
+  });
+
+  // Append menu to block
+  elem.appendChild(menu);
+
+  // Optional auto-remove on mouse leave
+  menu.addEventListener("mouseleave", () => {
+    menu.remove();
+  });
+};
+
+
+
+function editCreator(fontSize, Weight, innerText) {
+  const titleContainer = document.querySelector(".titleContainer");
+  const newBlockContainer = document.createElement("div");
+
+  newBlockContainer.setAttribute(
+    "class",
+    "newBlockContainer flex items-center group relative mt-4"
+  );
+
+  const hoverElem = document.createElement("div");
+  const newBlock = document.createElement("div");
+  hoverElem.setAttribute(
+    "class",
+    "text-5xl font-bold text-gray-400 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer relative top-0 "
+  );
+  
+  hoverElem.setAttribute("contenteditable", "false");
+  const id = "block-" + Date.now();
+  newBlock.setAttribute("id", id);
+  hoverElem.innerText = "+";
+  if (hoverElem) {
+    hoverElem.addEventListener("click", () => openTextOptions(id));
+  }
+
+  newBlock.setAttribute(
+    "class",
+    `w-full h-min-[3em] mt-4 text-white outline-none ${fontSize} ${Weight}`
+  );
+  newBlock.setAttribute("contenteditable", "true"); // ✅ Make it editable
+  newBlock.innerHTML = ""; // Start empty
+  newBlock.innerHTML = "<br>";
+
+  newBlockContainer.appendChild(hoverElem);
+  newBlockContainer.appendChild(newBlock);
+
+  newBlock.addEventListener("keydown", (e) => {
+    newBlock.addEventListener("keydown", (e) => {
+      setTimeout(() => {
+        const isEmpty = newBlock.innerText.trim().length === 0;
+
+        if (isEmpty && e.key === "Backspace") {
+          const container = newBlock.parentElement;
+          const parent = container.parentElement;
+
+          container.remove();
+
+          // Get all remaining blocks
+          const allBlocks = parent.querySelectorAll("[contenteditable='true']");
+
+          // If there are still blocks left
+          if (allBlocks.length > 0) {
+            const lastBlock = allBlocks[allBlocks.length - 1];
+            lastBlock.focus();
+
+            // Move cursor to the end
+            const range = document.createRange();
+            range.selectNodeContents(lastBlock);
+            range.collapse(false);
+
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+        }
+      }, 0);
+    });
+  });
+
+  titleContainer.appendChild(newBlockContainer);
+  cursonFocus(newBlock); // ✅ Focus and place caret
+}
+
+const openCreateTask = () => {
   home.innerHTML = "";
 
   home.innerHTML = `
     <div
-      contenteditable="true"
-      class="title w-[80%] h-[80%] px-4 py-3 rounded-lg outline-none text-5xl text-white"
-    >
-      Untitled
+      contenteditable="false"
+      class="titleContainer w-[80%] h-[80%] px-4 py-3 rounded-lg outline-none text-5xl text-white"
+    > 
+      <h1
+          class="title text-5xl text-white outline-none"
+          contenteditable="true"
+          data-placeholder="Start writing here..."
+        >
+        Untitled
+        </h1>
     </div>
   `;
 
   const title = document.querySelector(".title");
-
   title.addEventListener("keydown", (e) => {
     if (e.key != "Enter") {
       return;
     }
-
     e.preventDefault(); // ✅ Fix
-
-    const newBlock = document.createElement("div");
-    newBlock.setAttribute(
-      "class",
-      `w-full mt-4 outline-none ${textSize} ${fontWeight}`
-    );
-    newBlock.setAttribute("contenteditable", "true"); // ✅ Make it editable
-    newBlock.setAttribute("data-placeholder", "Type something...");
-    newBlock.innerHTML = "Hi"; // Start empty
-    newBlock.innerHTML = "<br>";
-
-    title.appendChild(newBlock);
-    cursonFocus(newBlock); // ✅ Focus and place caret
+    editCreator("text-2xl", "font-medium");
   });
 };
+
+// const handleData =()=>{
+
+//   home.addEventListener("input", (e) => {
+//     const task = localStorage.getItem("task") || [];
+//     const blockData = {
+//       blockId: "",
+//       text: "",
+//       textSize: "",
+//       Weight: "",
+//     };
+//     console.log(e.target.id, e.target.tagName);
+//     if (e.target.tagName === "H1") {
+//       task.
+//     }
+//   });
+
+// }
