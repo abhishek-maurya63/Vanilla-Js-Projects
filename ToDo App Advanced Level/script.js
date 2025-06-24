@@ -1,18 +1,9 @@
 const taskData = [];
-const newTask = {
-  taskId: "task-" + Date.now(),
-  title: "",
-  timeCreated: Date.now(),
-  timeLastUpdated: Date.now(),
-  category: "",
-  runningStatus: "in-progress",
-  blockData: [],
-};
 
 const home = document.querySelector(".home");
 window.addEventListener("DOMContentLoaded", (e) => {
   // homeWindow();
-  openCreateTask();
+  setToLocal();
 });
 const homeWindow = () => {
   const homeContent = `<div class="w-full h-full px-2 md:px-8 space-y-10">
@@ -100,7 +91,7 @@ const homeWindow = () => {
 
               
               <button
-                onclick="openCreateTask()"
+                onclick="setToLocal()"
                 class="rounded-xl p-5 bg-[#0f0f0f] hover:bg-[#1a1a1a] transition border-2 border-dashed border-gray-600 text-white flex flex-col justify-center items-center h-40"
               >
                 <svg
@@ -124,6 +115,30 @@ const homeWindow = () => {
         </div> `;
 
   home.innerHTML = homeContent;
+};
+
+const setToLocal = () => {
+  const taskStr = localStorage.getItem("tasks"); // this is a string or null
+  const tasks = taskStr ? JSON.parse(taskStr) : []; // parse if not null
+  const newTask = {
+    taskID: "task-" + Date.now(),
+    title: "Hey this is title",
+    timeCreated: Date.now(),
+    timeLastUpdated: Date.now(),
+    category: "",
+    runningStatus: "",
+    blockData: [
+      {
+        blockID: "block-" + Date.now(),
+        text: "heyyyyyyyyyyy",
+        size: "2xl",
+        weight: "font-normal",
+      },
+    ],
+  };
+  tasks.push(newTask);
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  openCreateTask(newTask.taskID);
 };
 
 const cursonFocus = (elem) => {
@@ -204,9 +219,32 @@ const openTextOptions = (id) => {
   });
 };
 
+function editCreator(fontSize, weight, taskID, blockID = null, innerText = "") {
+  console.log(taskID, !blockID);
 
+  const taskStr = localStorage.getItem("tasks");
+  const tasks = taskStr ? JSON.parse(taskStr) : [];
 
-function editCreator(fontSize, Weight, innerText) {
+  const task = tasks.find((task) => task.taskID === taskID); // or taskId based on your naming
+
+  if (!task) {
+    console.error("Task not found for ID:", taskID);
+    return;
+  }
+
+  if (!blockID) {
+    const newBlock = {
+      blockID: "block-" + Date.now(),
+      text: "",
+      size: fontSize.replace("text-", ""),
+      weight: Weight,
+    };
+
+    blockID = newBlock.blockID;
+    task.blockData.push(newBlock);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }
+
   const titleContainer = document.querySelector(".titleContainer");
   const newBlockContainer = document.createElement("div");
 
@@ -221,35 +259,35 @@ function editCreator(fontSize, Weight, innerText) {
     "class",
     "text-5xl font-bold text-gray-400 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer relative top-0 "
   );
-  
+
   hoverElem.setAttribute("contenteditable", "false");
-  const id = "block-" + Date.now();
-  newBlock.setAttribute("id", id);
+  newBlock.setAttribute("id", blockID);
   hoverElem.innerText = "+";
   if (hoverElem) {
-    hoverElem.addEventListener("click", () => openTextOptions(id));
+    hoverElem.addEventListener("click", () => openTextOptions(blockID));
   }
 
   newBlock.setAttribute(
     "class",
-    `w-full h-min-[3em] mt-4 text-white outline-none ${fontSize} ${Weight}`
+    `w-full h-min-[3em] mt-4 text-white outline-none ${fontSize} ${weight}`
   );
   newBlock.setAttribute("contenteditable", "true"); // ✅ Make it editable
   newBlock.innerHTML = ""; // Start empty
   newBlock.innerHTML = "<br>";
-
+  newBlock.innerHTML = innerText.trim() !== "" ? innerText : "<br>";
   newBlockContainer.appendChild(hoverElem);
   newBlockContainer.appendChild(newBlock);
 
   newBlock.addEventListener("keydown", (e) => {
-    newBlock.addEventListener("keydown", (e) => {
-      setTimeout(() => {
-        const isEmpty = newBlock.innerText.trim().length === 0;
+    setTimeout(() => {
+      const isEmpty = newBlock.innerText.trim().length === 0;
 
-        if (isEmpty && e.key === "Backspace") {
-          const container = newBlock.parentElement;
-          const parent = container.parentElement;
+      if (isEmpty && e.key === "Backspace") {
+        const container = newBlock.parentElement;
 
+        const parent = container.parentElement;
+
+        if (parent) {
           container.remove();
 
           // Get all remaining blocks
@@ -270,15 +308,18 @@ function editCreator(fontSize, Weight, innerText) {
             sel.addRange(range);
           }
         }
-      }, 0);
-    });
+      }
+    }, 0);
   });
 
   titleContainer.appendChild(newBlockContainer);
   cursonFocus(newBlock); // ✅ Focus and place caret
 }
 
-const openCreateTask = () => {
+const openCreateTask = (taskID) => {
+  const taskStr = localStorage.getItem("tasks"); // this is a string or null
+  const tasks = taskStr ? JSON.parse(taskStr) : []; // parse if not null
+
   home.innerHTML = "";
 
   home.innerHTML = `
@@ -297,29 +338,29 @@ const openCreateTask = () => {
   `;
 
   const title = document.querySelector(".title");
+
+  const task = tasks.find((task) => {
+    return task.taskID == taskID;
+  });
+  title.innerText = task.title;
+  if (task.blockData.length > 0) {
+    task.blockData.forEach((block) => {
+      console.log(block.blockID);
+      editCreator(
+        "text-" + block.size, // ✅ match the format you expect in classes
+        block.weight,
+        task.taskID,
+        block.blockID,
+        block.text
+      );
+    });
+  }
+
   title.addEventListener("keydown", (e) => {
     if (e.key != "Enter") {
       return;
     }
     e.preventDefault(); // ✅ Fix
-    editCreator("text-2xl", "font-medium");
+    editCreator("text-2xl", "font-medium", task.taskID);
   });
 };
-
-// const handleData =()=>{
-
-//   home.addEventListener("input", (e) => {
-//     const task = localStorage.getItem("task") || [];
-//     const blockData = {
-//       blockId: "",
-//       text: "",
-//       textSize: "",
-//       Weight: "",
-//     };
-//     console.log(e.target.id, e.target.tagName);
-//     if (e.target.tagName === "H1") {
-//       task.
-//     }
-//   });
-
-// }
