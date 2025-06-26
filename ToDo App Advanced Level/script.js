@@ -284,29 +284,6 @@ function timeAgo(timestamp) {
   return `${days} day${days > 1 ? "s" : ""} ago`;
 }
 
-// 📅 Time Ago Helper
-function timeAgo(timestamp) {
-  const seconds = Math.floor((Date.now() - timestamp) / 1000);
-  const mins = Math.floor(seconds / 60);
-  const hrs = Math.floor(mins / 60);
-  const days = Math.floor(hrs / 24);
-  if (seconds < 60) return "just now";
-  if (mins < 60) return `${mins} min ago`;
-  if (hrs < 24) return `${hrs} hour${hrs > 1 ? "s" : ""} ago`;
-  return `${days} day${days > 1 ? "s" : ""} ago`;
-}
-
-function timeAgo(timestamp) {
-  const seconds = Math.floor((Date.now() - timestamp) / 1000);
-  const mins = Math.floor(seconds / 60);
-  const hrs = Math.floor(mins / 60);
-  const days = Math.floor(hrs / 24);
-  if (seconds < 60) return "just now";
-  if (mins < 60) return `${mins} min ago`;
-  if (hrs < 24) return `${hrs} hour ago`;
-  return `${days} day${days > 1 ? "s" : ""} ago`;
-}
-
 const setToLocal = () => {
   const taskStr = localStorage.getItem("tasks"); // this is a string or null
   const tasks = taskStr ? JSON.parse(taskStr) : []; // parse if not null
@@ -315,7 +292,7 @@ const setToLocal = () => {
     title: "Untitled",
     timeCreated: Date.now(),
     timeLastUpdated: Date.now(),
-    runningStatus: "Pending",
+    runningStatus: "pending",
     blockData: [
       {
         blockID: "block-" + Date.now(),
@@ -328,7 +305,6 @@ const setToLocal = () => {
   tasks.push(newTask);
   localStorage.setItem("tasks", JSON.stringify(tasks));
   openCreateTask(newTask.taskID);
-  ``;
   leftCardRender(newTask.taskID, 1);
 };
 
@@ -523,6 +499,7 @@ function editCreator(fontSize, weight, taskID, blockID = null, innerText = "") {
 }
 
 const openCreateTask = (taskID) => {
+  recentHandler(taskID);
   const taskStr = localStorage.getItem("tasks"); // this is a string or null
   const tasks = taskStr ? JSON.parse(taskStr) : []; // parse if not null
 
